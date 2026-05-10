@@ -1,15 +1,15 @@
-FROM ghcr.io/pterodactyl/yolks:nodejs_20
+FROM node:20-bookworm-slim
 
 USER root
 
-RUN apk update && apk add --no-cache \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
     python3 \
-    py3-pip \
-    py3-virtualenv \
-    php \
+    python3-pip \
+    python3-venv \
     php-cli \
-    php-phar \
-    php-openssl \
+    php-common \
     php-mbstring \
     php-xml \
     php-curl \
@@ -18,21 +18,27 @@ RUN apk update && apk add --no-cache \
     php-intl \
     php-bcmath \
     php-sqlite3 \
-    php-mysqli \
-    php-pdo \
-    php-pdo_mysql \
-    php-pdo_sqlite \
+    php-mysql \
     unzip \
     git \
     curl \
     ca-certificates \
     bash \
+    tar \
+    jq \
     && ln -sf /usr/bin/python3 /usr/local/bin/python \
     && ln -sf /usr/bin/pip3 /usr/local/bin/pip \
     && curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer \
-    && rm /tmp/composer-setup.php
+    && rm /tmp/composer-setup.php \
+    && useradd -m -d /home/container -s /bin/bash container \
+    && chown -R container:container /home/container \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 USER container
+
+ENV USER=container
+ENV HOME=/home/container
 
 WORKDIR /home/container
