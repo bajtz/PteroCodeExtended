@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     bash \
     tar \
     jq \
+    iproute2 \
     && ln -sf /usr/bin/python3 /usr/local/bin/python \
     && ln -sf /usr/bin/pip3 /usr/local/bin/pip \
     && curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php \
@@ -42,3 +43,7 @@ ENV USER=container
 ENV HOME=/home/container
 
 WORKDIR /home/container
+
+COPY --chown=container:container ./entrypoint.sh /entrypoint.sh
+
+CMD ["/bin/bash", "/entrypoint.sh"]
